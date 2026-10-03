@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRTech - Sécuriser, Géolocaliser, Solutions IoT pour le transport</title>
+<style>
+:root{--g:#0f6e38;--n:#35f2a0;--bg:#040d09;--tx:#e8f5ee;--mut:#9bb5a6;--glass:rgba(10,30,20,.55);--bd:rgba(53,242,160,.18)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--tx);background:var(--bg);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}ul{list-style:none}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main,header,footer{position:relative;z-index:2}
+body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 70% 20%,rgba(15,110,56,.25),transparent 60%),radial-gradient(ellipse at 10% 90%,rgba(53,242,160,.08),transparent 50%)}
+
+/* Loader / progress / glow */
+#loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:grid;place-items:center;transition:opacity .8s,visibility .8s}
+#loader.off{opacity:0;visibility:hidden}
+#loader div{font-size:28px;font-weight:800;color:var(--n);letter-spacing:6px;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.3;transform:scale(.96)}}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;z-index:2000;background:linear-gradient(90deg,var(--g),var(--n));box-shadow:0 0 12px var(--n)}
+.glow{position:fixed;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;z-index:1;pointer-events:none;background:radial-gradient(circle,rgba(53,242,160,.13),transparent 65%);will-change:transform}
+
+/* Header */
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 80px;position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(4,13,9,.55);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);transition:transform .4s}
+header.hide{transform:translateY(-100%)}
+.logo{font-weight:800;font-size:24px;letter-spacing:1px}.logo b{color:var(--n)}
+nav ul{display:flex;gap:32px}
+nav a{font-weight:500;position:relative;color:var(--mut);transition:color .3s}
+nav a::after{content:"";position:absolute;left:0;bottom:-6px;height:2px;width:0;background:var(--n);transition:width .3s}
+nav a:hover{color:#fff}nav a:hover::after{width:100%}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:140px 80px 80px;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;color:var(--n);font-weight:600;letter-spacing:3px;font-size:13px;text-transform:uppercase;margin-bottom:24px}
+.eyebrow i{width:9px;height:9px;border-radius:50%;background:var(--n);box-shadow:0 0 0 0 var(--n);animation:ping 1.8s infinite}
+@keyframes ping{to{box-shadow:0 0 0 14px transparent}}
+.hero-titles{display:grid;max-width:760px;perspective:900px}
+.hero-title{grid-area:1/1;font-size:clamp(34px,5.4vw,70px);font-weight:900;line-height:1.08;pointer-events:none}
+.hero-title.active{pointer-events:auto}
+.hero-title .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em}
+.hero-title .w>span{display:inline-block;transform:translateY(110%) rotateX(-70deg);opacity:0;transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .6s;transition-delay:var(--d)}
+.hero-title.active .w>span{transform:none;opacity:1}
+.hero-title:not(.active) .w>span{transition-delay:0s;transform:translateY(-110%);}
+.hero-title em{font-style:normal;background:linear-gradient(90deg,var(--n),#8dffd0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{max-width:560px;color:var(--mut);font-size:19px;margin:26px 0 38px}
+.btns{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-block;padding:15px 34px;border-radius:50px;font-weight:700;font-size:16px;border:none;cursor:pointer;transition:transform .2s,box-shadow .3s;will-change:transform}
+.btn-p{background:linear-gradient(135deg,var(--g),#16a35a);color:#fff;box-shadow:0 8px 30px rgba(15,110,56,.5)}
+.btn-p:hover{box-shadow:0 8px 40px rgba(53,242,160,.55)}
+.btn-o{border:1px solid var(--n);color:var(--n);background:transparent}
+.btn-o:hover{background:rgba(53,242,160,.12)}
+#pauseBtn{width:44px;height:44px;border-radius:50%;border:1px solid var(--bd);background:var(--glass);color:var(--n);cursor:pointer;font-size:14px}
+.scroll-hint{position:absolute;bottom:30px;left:80px;color:var(--mut);font-size:12px;letter-spacing:3px;display:flex;align-items:center;gap:12px}
+.scroll-hint span{width:1px;height:46px;background:linear-gradient(var(--n),transparent);animation:drip 2s infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* Marquee */
+.marquee{overflow:hidden;border-block:1px solid var(--bd);background:rgba(4,13,9,.7);padding:18px 0;backdrop-filter:blur(6px)}
+.marquee div{display:flex;gap:60px;width:max-content;animation:mq 28s linear infinite;color:var(--n);font-weight:700;letter-spacing:4px;font-size:14px;text-transform:uppercase}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* Layout */
+.container{padding:100px 80px}
+.section-title{font-size:clamp(28px,3.6vw,46px);font-weight:900;margin-bottom:46px}
+.section-title::after{content:"";display:block;width:70px;height:4px;margin-top:14px;border-radius:4px;background:linear-gradient(90deg,var(--n),transparent)}
+.grid-2,.grid-3,.grid-4{display:grid;gap:28px}
+.grid-2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.grid-4{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.reveal{opacity:0;transform:translateY(50px);transition:opacity .9s,transform .9s cubic-bezier(.2,.8,.2,1)}
+.reveal.visible{opacity:1;transform:none}
+.reveal .grid-2>*,.reveal .grid-3>*,.reveal .grid-4>*{opacity:0;transform:translateY(40px) scale(.96);transition:opacity .7s,transform .7s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i)*.12s + .15s)}
+.reveal.visible .grid-2>*,.reveal.visible .grid-3>*,.reveal.visible .grid-4>*{opacity:1;transform:none}
+
+/* Intro */
+.intro-card{max-width:1000px;margin:0 auto;text-align:center;padding:50px 60px;border-radius:40px;background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(16px)}
+.intro-card p{font-size:21px;color:var(--mut);margin-bottom:14px}.intro-card strong{color:var(--n)}
+
+/* Cards 3D */
+.tilt{--rx:0deg;--ry:0deg;--mx:50%;--my:50%;position:relative;border-radius:20px;background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(12px);overflow:hidden;transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .15s ease-out,border-color .3s,box-shadow .3s;will-change:transform}
+.tilt:hover{border-color:var(--n);box-shadow:0 25px 60px rgba(0,0,0,.5),0 0 40px rgba(53,242,160,.12)}
+.tilt::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(circle at var(--mx) var(--my),rgba(255,255,255,.14),transparent 45%)}
+.tilt:hover::after{opacity:1}
+.card-img{height:220px;position:relative;overflow:hidden;background:linear-gradient(135deg,#0b3d22,#0f6e38 60%,#35f2a0)}
+.card-img img{width:100%;height:100%;object-fit:cover;transition:transform .8s}
+.tilt:hover .card-img img{transform:scale(1.1)}
+.card-body{padding:26px;transform:translateZ(30px)}
+.card-body h3,.sc h3{font-size:21px;color:var(--n);margin-bottom:10px}
+.card-body p,.sc p{color:var(--mut)}
+.sc{padding:30px}
+.sc .ico{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;margin-bottom:18px;font-size:22px;background:rgba(53,242,160,.12);border:1px solid var(--bd)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;padding:0 80px 20px}
+.stat{text-align:center;padding:34px 10px;border-radius:20px;background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(10px)}
+.stat b{display:block;font-size:clamp(38px,5vw,60px);font-weight:900;color:var(--n);line-height:1}
+.stat span{color:var(--mut);font-size:15px}
+
+/* Services band */
+.services-section{background:linear-gradient(180deg,transparent,rgba(15,110,56,.12),transparent)}
+.services-section .grid-2{margin-bottom:28px}
+
+/* Groupe */
+.sub-brand{border-left:4px solid var(--n);padding:6px 0 6px 22px;margin-bottom:26px;transition:transform .3s}
+.sub-brand:hover{transform:translateX(10px)}
+.sub-brand h3{font-size:24px;color:var(--n)}.sub-brand p{color:var(--mut)}
+.group-lead{margin-bottom:34px;font-size:19px;color:var(--mut);max-width:800px}
+
+/* Contact */
+.contact-container{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin:0 80px;padding:60px;border-radius:30px;background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(16px)}
+.contact-info h2{font-size:clamp(32px,4vw,48px);color:var(--n);margin-bottom:20px}
+.contact-info p{color:var(--mut)}
+.form-row{display:flex;gap:20px}.form-group{margin-bottom:20px;flex:1}
+label{display:block;margin-bottom:8px;font-weight:500;color:var(--n);font-size:14px}
+input{width:100%;padding:14px;border:1px solid var(--bd);border-radius:12px;font-size:15px;background:rgba(0,0,0,.35);color:#fff;transition:border-color .3s,box-shadow .3s}
+input:focus{outline:none;border-color:var(--n);box-shadow:0 0 0 4px rgba(53,242,160,.15)}
+#ok{display:none;margin-top:16px;color:var(--n);font-weight:600}
+
+/* Footer */
+footer{margin-top:100px;padding:60px 80px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:40px;background:rgba(4,13,9,.9);border-top:1px solid var(--bd)}
+footer h4{font-size:20px;color:var(--n);margin-bottom:18px}
+footer li{margin-bottom:10px}footer a,footer p{color:var(--mut)}footer a:hover{color:var(--n)}
+
+@media(max-width:768px){
+header,.hero,.container,.stats,footer{padding-left:20px;padding-right:20px}
+.container{padding-top:70px;padding-bottom:70px}
+nav ul{gap:14px;font-size:14px}.hero{padding-top:120px}.scroll-hint{left:20px}
+.contact-container{grid-template-columns:1fr;margin:0 20px;padding:30px 22px}
+.form-row{flex-direction:column;gap:0}.intro-card{padding:30px 22px}.glow{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div id="loader"><div>S.R.TECH</div></div>
+<div id="bar"></div><div class="glow" id="glow"></div>
+<canvas id="bg"></canvas>
+
+<header id="hd">
+  <a href="#" class="logo">S.R.<b>Tech</b></a>
+  <nav><ul>
+    <li><a href="#histoire">Histoire</a></li>
+    <li><a href="#groupe">Notre groupe</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul></nav>
+</header>
+
+<main>
+<section class="hero">
+  <div class="eyebrow"><i></i>Transport · IoT · Sécurité</div>
+  <div class="hero-titles">
+    <h1 class="hero-title active">Sécuriser, Géolocaliser, <em>Solutions IoT</em> pour le transport.</h1>
+    <h1 class="hero-title">La sécurité ne doit <em>jamais</em> être une option.</h1>
+  </div>
+  <p class="lead">Surveillance en temps réel de vos véhicules et conteneurs, partout, 24h/24.</p>
+  <div class="btns">
+    <a href="#services" class="btn btn-p mag">Découvrir nos services</a>
+    <a href="#contact" class="btn btn-o mag">Nous contacter</a>
+    <button id="pauseBtn" aria-label="Pause">❚❚</button>
+  </div>
+  <div class="scroll-hint"><span></span>SCROLL</div>
+</section>
+
+<div class="marquee"><div id="mq">
+  <i>Géolocalisation</i><i>Sécurisation 24/7</i><i>IoT</i><i>Télésurveillance</i><i>Supply chain</i><i>RGPD</i><i>Hébergement France</i><i>Conteneurs</i>
+</div></div>
+
+<section class="container reveal" id="histoire">
+  <div class="intro-card">
+    <p>Depuis plus de <strong>15 ans</strong>, SRTech dispose d’une large gamme d’<strong>équipements sécuritaires</strong> répondant ainsi aux cahiers des charges les plus poussés.</p>
+    <p>Son service R&D associé aux nouvelles technologies, lui permet d’être leader de sa profession.</p>
+  </div>
+</section>
+
+<div class="stats reveal">
+  <div class="stat"><b data-count="15" data-suf="+">0</b><span>années d'expertise</span></div>
+  <div class="stat"><b data-count="2500" data-suf="+">0</b><span>camions équipés</span></div>
+  <div class="stat"><b data-count="24" data-suf="/7">0</b><span>surveillance</span></div>
+  <div class="stat"><b data-count="100" data-suf="%">0</b><span>données hébergées en France</span></div>
+</div>
+
+<section class="container reveal">
+  <h2 class="section-title">Sécuriser votre supply chain</h2>
+  <div class="grid-2">
+    <div class="tilt" style="--i:0">
+      <div class="card-img"><img src="images/truck.jpg" alt="Sécurisation transport routier" onerror="this.style.display='none'"></div>
+      <div class="card-body"><h3>Sécurisation</h3><p>Nous offrons un suivi continu pour protéger vos flux logistiques et véhicules routiers contre le vol et les intrusions.</p></div>
+    </div>
+    <div class="tilt" style="--i:1">
+      <div class="card-img"><img src="images/containers.jpg" alt="Géolocalisation conteneurs" onerror="this.style.display='none'"></div>
+      <div class="card-body"><h3>Géolocalisation</h3><p>En suivant en direct les conteneurs et marchandises à chaque étape du trajet maritime ou terrestre.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="container services-section reveal" id="services">
+  <h2 class="section-title">Nos Services</h2>
+  <div class="grid-2">
+    <div class="tilt sc" style="--i:0"><div class="ico">🛡️</div><h3>Sécurisation 24H/24</h3><p><strong>Surveillance humaine en temps réel :</strong> Nos partenaires de télésurveillance traitent en direct les alertes (ouverture de porte, intrusion, déviation). Les opérateurs agissent immédiatement selon vos consignes.</p></div>
+    <div class="tilt sc" style="--i:1"><div class="ico">📍</div><h3>Géolocalisation en temps réel</h3><p><strong>Suivi de flotte complet :</strong> Suivez la position exacte de vos véhicules et conteneurs via notre plateforme web/mobile. Vue cartographique dynamique et historique des trajets disponibles 24h/24.</p></div>
+  </div>
+  <div class="grid-3">
+    <div class="tilt sc" style="--i:2"><div class="ico">👁️</div><h3>Surveillance 24/7</h3><p>Traitement direct des alertes véhicule et conteneur par des opérateurs qualifiés.</p></div>
+    <div class="tilt sc" style="--i:3"><div class="ico">⚙️</div><h3>Accompagnement sur mesure</h3><p>Personnalisation des paramètres, seuils d'alerte, zones de sécurité et tableaux de bord.</p></div>
+    <div class="tilt sc" style="--i:4"><div class="ico">🇫🇷</div><h3>Infrastructure française</h3><p>Hébergement des données en France dans le strict respect du RGPD et des normes de cybersécurité.</p></div>
+  </div>
+</section>
+
+<section class="container reveal">
+  <h2 class="section-title">Notre mission</h2>
+  <div class="grid-3">
+    <div class="tilt" style="--i:0"><div class="card-img"><img src="images/truck.jpg" alt="Camion" onerror="this.style.display='none'"></div><div class="card-body"><h3>Offrir une surveillance en temps réel</h3><p>Suivi permanent des véhicules et conteneurs.</p></div></div>
+    <div class="tilt" style="--i:1"><div class="card-img"><img src="images/security.jpg" alt="Centre de contrôle" onerror="this.style.display='none'"></div><div class="card-body"><h3>Réduire les délais</h3><p>Intervention immédiate en cas d'alerte détectée.</p></div></div>
+    <div class="tilt" style="--i:2"><div class="card-img"><img src="images/containers.jpg" alt="Traçabilité" onerror="this.style.display='none'"></div><div class="card-body"><h3>Garantir la conformité</h3><p>Traçabilité complète à chaque étape du transport.</p></div></div>
+  </div>
+</section>
+
+<section class="container reveal">
+  <h2 class="section-title">Ce qui nous distingue</h2>
+  <div class="grid-4">
+    <div class="tilt sc" style="--i:0"><h3>Réactivité terrain</h3><p>Interventions rapides partout en France pour assurer la continuité opérationnelle.</p></div>
+    <div class="tilt sc" style="--i:1"><h3>Technologie éprouvée</h3><p>Validée sur le terrain avec plus de 2 500 camions équipés en activité.</p></div>
+    <div class="tilt sc" style="--i:2"><h3>Adaptabilité</h3><p>Solutions configurées spécifiquement pour transporteurs et logisticiens.</p></div>
+    <div class="tilt sc" style="--i:3"><h3>Service client dédié</h3><p>Équipe support réactive et joignable directement sans intermédiaire.</p></div>
+  </div>
+</section>
+
+<section class="container reveal" id="groupe">
+  <h2 class="section-title">Notre groupe.</h2>
+  <p class="group-lead">Ensemble, nous maîtrisons vos projets de A à Z, en proposant des solutions connectées sur mesure, de la conception à la mise en service.</p>
+  <div class="sub-brand"><h3>S.R.Track - Logiciel et réseau</h3><p>Systèmes d’exploitation cloud, fabrication d’objets IoT, logiciels métiers et interfaces.</p></div>
+  <div class="sub-brand"><h3>S.R.+ – Matériel et objets Connectés</h3><p>Cloud, logiciels et SAV.</p></div>
+</section>
+
+<section class="contact-container reveal" id="contact">
+  <div class="contact-info">
+    <h2>Contactez-nous.</h2>
+    <p>Vous avez une question, un projet ou besoin d’assistance ?</p>
+    <p style="margin-top:10px">Notre équipe est à votre écoute.</p>
+  </div>
+  <form id="form" action="#" method="post">
+    <div class="form-row">
+      <div class="form-group"><label for="fname">Prénom (obligatoire)</label><input type="text" id="fname" required></div>
+      <div class="form-group"><label for="lname">Nom de famille (obligatoire)</label><input type="text" id="lname" required></div>
+    </div>
+    <div class="form-group"><label for="email">E-mail (obligatoire)</label><input type="email" id="email" required></div>
+    <button type="submit" class="btn btn-p mag">Envoyer</button>
+    <div id="ok">✔ Merci ! Nous revenons vers vous rapidement.</div>
+  </form>
+</section>
+</main>
+
+<footer>
+  <div><h4>Navigation</h4><ul><li><a href="#">Accueil</a></li><li><a href="#histoire">Histoire</a></li><li><a href="#services">Services</a></li><li><a href="#contact">Contact</a></li></ul></div>
+  <div><h4>Légales</h4><ul><li><a href="#">Mentions légales</a></li><li><a href="#">Politique de confidentialité</a></li></ul></div>
+  <div><h4>Contact</h4><p><strong>S.R.Tech</strong></p><p>39 Rue de l’aviation, 94310 Orly</p><p>01 46 86 48 81</p></div>
+</footer>
+
+<script>
+/* ========== UI ========== */
+(()=>{
+  const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+  const touch=matchMedia('(hover:none)').matches;
+
+  // Loader
+  addEventListener('load',()=>setTimeout(()=>$('#loader').classList.add('off'),500));
+  setTimeout(()=>$('#loader').classList.add('off'),3500);
+
+  // Marquee : duplication pour boucle infinie
+  $('#mq').innerHTML+=$('#mq').innerHTML;
+  $$('#mq i').forEach(i=>i.style.fontStyle='normal');
+
+  // Titres : découpe en mots
+  const titles=$$('.hero-title');
+  titles.forEach(t=>{
+    let k=0;
+    const walk=n=>[...n.childNodes].forEach(c=>{
+      if(c.nodeType===3){
+        const f=document.createDocumentFragment();
+        c.textContent.split(/(\s+)/).forEach(p=>{
+          if(!p.trim()){f.append(p);return}
+          const w=document.createElement('span');w.className='w';
+          w.innerHTML='<span style="--d:'+(k++*.07)+'s">'+p+'</span>';f.append(w);
+        });
+        c.replaceWith(f);
+      }else walk(c);
+    });
+    walk(t);
+  });
+  let cur=0,playing=true,timer;
+  const next=()=>{titles[cur].classList.remove('active');cur=(cur+1)%titles.length;titles[cur].classList.add('active')};
+  const start=()=>timer=setInterval(next,5000);
+  $('#pauseBtn').onclick=e=>{playing?clearInterval(timer):start();e.target.textContent=playing?'▶':'❚❚';playing=!playing};
+  start();
+
+  // Reveal
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);
+    e.target.querySelectorAll('[data-count]').forEach(count);if(e.target.dataset.count)count(e.target)}}),{threshold:.15});
+  $$('.reveal').forEach(el=>io.observe(el));
+
+  // Compteurs
+  function count(el){
+    const to=+el.dataset.count,suf=el.dataset.suf||'',t0=performance.now(),d=1800;
+    (function f(t){const p=Math.min((t-t0)/d,1),e=1-Math.pow(1-p,4);
+      el.textContent=Math.round(to*e).toLocaleString('fr-FR')+suf;if(p<1)requestAnimationFrame(f)})(t0);
+  }
+
+  // Tilt 3D
+  $$('.tilt').forEach(c=>{
+    c.addEventListener('mousemove',e=>{
+      const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      c.style.setProperty('--ry',((x-.5)*14)+'deg');c.style.setProperty('--rx',((.5-y)*14)+'deg');
+      c.style.setProperty('--mx',x*100+'%');c.style.setProperty('--my',y*100+'%');
+    });
+    c.addEventListener('mouseleave',()=>{c.style.setProperty('--rx','0deg');c.style.setProperty('--ry','0deg')});
+  });
+
+  // Boutons magnétiques
+  if(!touch)$$('.mag').forEach(b=>{
+    b.addEventListener('mousemove',e=>{const r=b.getBoundingClientRect();
+      b.style.transform='translate('+(e.clientX-r.left-r.width/2)*.25+'px,'+(e.clientY-r.top-r.height/2)*.35+'px)'});
+    b.addEventListener('mouseleave',()=>b.style.transform='');
+  });
+
+  // Lueur curseur
+  const glow=$('#glow');let gx=0,gy=0,tx=0,ty=0;
+  if(!touch){addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY});
+    (function g(){gx+=(tx-gx)*.1;gy+=(ty-gy)*.1;glow.style.transform='translate('+gx+'px,'+gy+'px)';requestAnimationFrame(g)})()}
+
+  // Barre de progression + header
+  let ly=0;
+  addEventListener('scroll',()=>{
+    const y=scrollY,h=document.documentElement.scrollHeight-innerHeight;
+    $('#bar').style.width=(y/h*100)+'%';
+    $('#hd').classList.toggle('hide',y>ly&&y>200);ly=y;
+  },{passive:true});
+
+  // Formulaire (démo : pas de backend branché)
+  $('#form').addEventListener('submit',e=>{e.preventDefault();$('#ok').style.display='block';e.target.reset()});
+})();
+
+/* ========== SCÈNE 3D ========== */
+(()=>{
+  function load(urls,cb){
+    if(window.THREE)return cb();
+    if(!urls.length)return;
+    const s=document.createElement('script');s.src=urls.shift();
+    s.onload=cb;s.onerror=()=>load(urls,cb);document.head.appendChild(s);
+  }
+  load(['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js'],()=>{
+    try{init()}catch(e){console.warn('3D indisponible',e);document.getElementById('bg').style.display='none'}
+  });
+
+  function init(){
+    const mobile=innerWidth<768,still=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const canvas=document.getElementById('bg');
+    const ren=new THREE.WebGLRenderer({canvas,antialias:!mobile,alpha:true});
+    ren.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:2));
+    const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(50,1,.1,100);cam.position.z=7.5;
+    const globe=new THREE.Group();scene.add(globe);
+    const R=2.2,NEON=0x35f2a0;
+
+    const ll=(lat,lon,r=R)=>{const p=(90-lat)*Math.PI/180,t=(lon+180)*Math.PI/180;
+      return new THREE.Vector3(-r*Math.sin(p)*Math.cos(t),r*Math.cos(p),r*Math.sin(p)*Math.sin(t))};
+
+    // Noyau + points (spirale de Fibonacci)
+    globe.add(new THREE.Mesh(new THREE.SphereGeometry(R*.985,48,48),new THREE.MeshBasicMaterial({color:0x03120a,transparent:true,opacity:.92})));
+    const N=mobile?1600:3600,pos=new Float32Array(N*3);
+    for(let i=0;i<N;i++){const y=1-2*(i+.5)/N,r=Math.sqrt(1-y*y),a=i*2.399963;
+      pos.set([R*r*Math.cos(a),R*y,R*r*Math.sin(a)],i*3)}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    globe.add(new THREE.Points(g,new THREE.PointsMaterial({color:NEON,size:.022,transparent:true,opacity:.7})));
+
+    // Halo atmosphérique
+    const atmo=new THREE.Mesh(new THREE.SphereGeometry(R*1.18,48,48),new THREE.ShaderMaterial({
+      vertexShader:'varying vec3 n;void main(){n=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+      fragmentShader:'varying vec3 n;void main(){float i=pow(.62-dot(n,vec3(0.,0.,1.)),2.);gl_FragColor=vec4(.2,.95,.63,1.)*i;}',
+      blending:THREE.AdditiveBlending,side:THREE.BackSide,transparent:true,depthWrite:false}));
+    scene.add(atmo);
+
+    // Hubs + arcs + paquets
+    const hubs=[[48.73,2.37],[40.7,-74],[35.7,139.7],[-23.5,-46.6],[30,31.2],[1.3,103.8],[51.5,0],[25.2,55.3],[36.7,3],[-33.9,18.4],[55.7,37.6],[19.4,-99.1]];
+    const hubMat=new THREE.MeshBasicMaterial({color:0xffffff});
+    const pts=hubs.map(h=>ll(h[0],h[1]));
+    pts.forEach((p,i)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(i?.035:.07,12,12),i?hubMat:new THREE.MeshBasicMaterial({color:NEON}));m.position.copy(p);globe.add(m)});
+
+    const curves=[];
+    const arc=(a,b)=>{const d=a.distanceTo(b),mid=a.clone().add(b).multiplyScalar(.5).normalize().multiplyScalar(R+d*.32);
+      const c=new THREE.QuadraticBezierCurve3(a,mid,b);curves.push(c);
+      globe.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(c.getPoints(60)),new THREE.LineBasicMaterial({color:NEON,transparent:true,opacity:.35})))};
+    for(let i=1;i<pts.length;i++)arc(pts[0],pts[i]);
+    for(let i=0;i<8;i++){const a=1+Math.floor(Math.random()*11),b=1+Math.floor(Math.random()*11);if(a!==b)arc(pts[a],pts[b])}
+
+    const packets=curves.map(c=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.04,8,8),new THREE.MeshBasicMaterial({color:0xaaffdd}));
+      globe.add(m);return{m,c,t:Math.random(),s:.002+Math.random()*.003}});
+
+    // Anneaux pulsants sur Orly
+    const rings=[0,.5].map(o=>{const r=new THREE.Mesh(new THREE.RingGeometry(.08,.1,48),new THREE.MeshBasicMaterial({color:NEON,transparent:true,side:THREE.DoubleSide,depthWrite:false}));
+      r.position.copy(pts[0]);r.lookAt(pts[0].clone().multiplyScalar(2));globe.add(r);return{r,o}});
+
+    // Champ d'étoiles
+    const SN=mobile?400:1100,sp=new Float32Array(SN*3);
+    for(let i=0;i<SN*3;i++)sp[i]=(Math.random()-.5)*40;
+    const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.BufferAttribute(sp,3));
+    const stars=new THREE.Points(sg,new THREE.PointsMaterial({color:0x8dffd0,size:.03,transparent:true,opacity:.5}));scene.add(stars);
+
+    // Interaction
+    let mx=0,my=0,sc=0,scT=0,gx=0;
+    addEventListener('mousemove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+    addEventListener('scroll',()=>{scT=scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight)},{passive:true});
+    const resize=()=>{ren.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()};
+    addEventListener('resize',resize);resize();
+
+    const clock=new THREE.Clock();
+    (function loop(){
+      requestAnimationFrame(loop);
+      const t=clock.getElapsedTime(),k=still?0:1;
+      sc+=(scT-sc)*.06;
+      const mob=innerWidth<768;
+      const tx=mob?0:Math.cos(sc*Math.PI*2.5)*2.7,ty=mob?1.6:Math.sin(sc*Math.PI*3)*.5;
+      gx+=(tx-gx)*.05;
+      globe.position.set(gx,ty,0);atmo.position.copy(globe.position);
+      const s=(mob?.65:1)*(1+.18*Math.sin(sc*Math.PI*5));globe.scale.setScalar(s);atmo.scale.setScalar(s);
+      globe.rotation.y=t*.12*k+sc*7;globe.rotation.x=.35+sc*.6;
+      stars.rotation.y=t*.01*k+sc*.5;stars.rotation.x=sc*.3;
+      cam.position.x+=(mx*.8-cam.position.x)*.04;cam.position.y+=(-my*.5-cam.position.y)*.04;
+      cam.position.z=7.5-Math.sin(sc*Math.PI)*1.2;cam.lookAt(0,0,0);
+      packets.forEach(p=>{p.t=(p.t+p.s*k)%1;p.m.position.copy(p.c.getPoint(p.t))});
+      rings.forEach(({r,o})=>{const p=((t*.5*k+o)%1);r.scale.setScalar(1+p*7);r.material.opacity=.8*(1-p)});
+      ren.render(scene,cam);
+    })();
+  }
+})();
+</script>
+</body>
+</html>

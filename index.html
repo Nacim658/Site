@@ -78,19 +78,24 @@ nav a:hover{color:#fff}nav a:hover::after{width:100%}
 .intro-card{max-width:1000px;margin:0 auto;text-align:center;padding:50px 60px;border-radius:40px;background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(16px)}
 .intro-card p{font-size:21px;color:var(--mut);margin-bottom:14px}.intro-card strong{color:var(--n)}
 
-/* Cards 3D */
+/* Cartes 3D */
 .tilt{--rx:0deg;--ry:0deg;--mx:50%;--my:50%;position:relative;border-radius:20px;background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(12px);overflow:hidden;transform:perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .15s ease-out,border-color .3s,box-shadow .3s;will-change:transform}
 .tilt:hover{border-color:var(--n);box-shadow:0 25px 60px rgba(0,0,0,.5),0 0 40px rgba(53,242,160,.12)}
-.tilt::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(circle at var(--mx) var(--my),rgba(255,255,255,.14),transparent 45%)}
+.tilt::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(circle at var(--mx) var(--my),rgba(255,255,255,.14),transparent 45%);z-index:3}
 .tilt:hover::after{opacity:1}
-.card-img{height:220px;position:relative;overflow:hidden;background:linear-gradient(135deg,#0b3d22,#0f6e38 60%,#35f2a0)}
-.card-img img{width:100%;height:100%;object-fit:cover;transition:transform .8s}
-.tilt:hover .card-img img{transform:scale(1.1)}
 .card-body{padding:26px;transform:translateZ(30px)}
-.card-body h3,.sc h3{font-size:21px;color:var(--n);margin-bottom:10px}
-.card-body p,.sc p{color:var(--mut)}
-.sc{padding:30px}
-.sc .ico{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;margin-bottom:18px;font-size:22px;background:rgba(53,242,160,.12);border:1px solid var(--bd)}
+.card-body h3{font-size:21px;color:var(--n);margin-bottom:10px}
+.card-body p{color:var(--mut)}
+
+/* Images des cartes : illustration vectorielle + photo optionnelle par-dessus */
+.card-img{height:210px;position:relative;overflow:hidden;background:linear-gradient(135deg,#0b3d22,#0f6e38 65%,#17a05a)}
+.card-img::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(53,242,160,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(53,242,160,.12) 1px,transparent 1px);background-size:28px 28px}
+.card-img::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(4,13,9,.6))}
+.card-img svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 8px rgba(53,242,160,.55));transition:transform .8s}
+.card-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;transition:transform .8s}
+.tilt:hover .card-img svg,.tilt:hover .card-img img{transform:scale(1.08)}
+.a{fill:none;stroke:#35f2a0;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.f{fill:rgba(53,242,160,.14)}.w{fill:#fff}.s{stroke:#fff}
 
 /* Stats */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;padding:0 80px 20px}
@@ -182,49 +187,53 @@ nav ul{gap:14px;font-size:14px}.hero{padding-top:120px}.scroll-hint{left:20px}
   <div class="stat"><b data-count="100" data-suf="%">0</b><span>données hébergées en France</span></div>
 </div>
 
+<!-- ===== Sécuriser votre supply chain ===== -->
 <section class="container reveal">
   <h2 class="section-title">Sécuriser votre supply chain</h2>
   <div class="grid-2">
     <div class="tilt" style="--i:0">
-      <div class="card-img"><img src="images/truck.jpg" alt="Sécurisation transport routier" onerror="this.style.display='none'"></div>
+      <div class="card-img" data-ill="truck" data-photo="images/truck.jpg"></div>
       <div class="card-body"><h3>Sécurisation</h3><p>Nous offrons un suivi continu pour protéger vos flux logistiques et véhicules routiers contre le vol et les intrusions.</p></div>
     </div>
     <div class="tilt" style="--i:1">
-      <div class="card-img"><img src="images/containers.jpg" alt="Géolocalisation conteneurs" onerror="this.style.display='none'"></div>
+      <div class="card-img" data-ill="container" data-photo="images/containers.jpg"></div>
       <div class="card-body"><h3>Géolocalisation</h3><p>En suivant en direct les conteneurs et marchandises à chaque étape du trajet maritime ou terrestre.</p></div>
     </div>
   </div>
 </section>
 
+<!-- ===== Nos Services ===== -->
 <section class="container services-section reveal" id="services">
   <h2 class="section-title">Nos Services</h2>
   <div class="grid-2">
-    <div class="tilt sc" style="--i:0"><div class="ico">🛡️</div><h3>Sécurisation 24H/24</h3><p><strong>Surveillance humaine en temps réel :</strong> Nos partenaires de télésurveillance traitent en direct les alertes (ouverture de porte, intrusion, déviation). Les opérateurs agissent immédiatement selon vos consignes.</p></div>
-    <div class="tilt sc" style="--i:1"><div class="ico">📍</div><h3>Géolocalisation en temps réel</h3><p><strong>Suivi de flotte complet :</strong> Suivez la position exacte de vos véhicules et conteneurs via notre plateforme web/mobile. Vue cartographique dynamique et historique des trajets disponibles 24h/24.</p></div>
+    <div class="tilt" style="--i:0"><div class="card-img" data-ill="shield"></div><div class="card-body"><h3>Sécurisation 24H/24</h3><p><strong>Surveillance humaine en temps réel :</strong> Nos partenaires de télésurveillance traitent en direct les alertes (ouverture de porte, intrusion, déviation). Les opérateurs agissent immédiatement selon vos consignes.</p></div></div>
+    <div class="tilt" style="--i:1"><div class="card-img" data-ill="map"></div><div class="card-body"><h3>Géolocalisation en temps réel</h3><p><strong>Suivi de flotte complet :</strong> Suivez la position exacte de vos véhicules et conteneurs via notre plateforme web/mobile. Vue cartographique dynamique et historique des trajets disponibles 24h/24.</p></div></div>
   </div>
   <div class="grid-3">
-    <div class="tilt sc" style="--i:2"><div class="ico">👁️</div><h3>Surveillance 24/7</h3><p>Traitement direct des alertes véhicule et conteneur par des opérateurs qualifiés.</p></div>
-    <div class="tilt sc" style="--i:3"><div class="ico">⚙️</div><h3>Accompagnement sur mesure</h3><p>Personnalisation des paramètres, seuils d'alerte, zones de sécurité et tableaux de bord.</p></div>
-    <div class="tilt sc" style="--i:4"><div class="ico">🇫🇷</div><h3>Infrastructure française</h3><p>Hébergement des données en France dans le strict respect du RGPD et des normes de cybersécurité.</p></div>
+    <div class="tilt" style="--i:2"><div class="card-img" data-ill="eye"></div><div class="card-body"><h3>Surveillance 24/7</h3><p>Traitement direct des alertes véhicule et conteneur par des opérateurs qualifiés.</p></div></div>
+    <div class="tilt" style="--i:3"><div class="card-img" data-ill="sliders"></div><div class="card-body"><h3>Accompagnement sur mesure</h3><p>Personnalisation des paramètres, seuils d'alerte, zones de sécurité et tableaux de bord.</p></div></div>
+    <div class="tilt" style="--i:4"><div class="card-img" data-ill="server"></div><div class="card-body"><h3>Infrastructure française</h3><p>Hébergement des données en France dans le strict respect du RGPD et des normes de cybersécurité.</p></div></div>
   </div>
 </section>
 
+<!-- ===== Notre mission ===== -->
 <section class="container reveal">
   <h2 class="section-title">Notre mission</h2>
   <div class="grid-3">
-    <div class="tilt" style="--i:0"><div class="card-img"><img src="images/truck.jpg" alt="Camion" onerror="this.style.display='none'"></div><div class="card-body"><h3>Offrir une surveillance en temps réel</h3><p>Suivi permanent des véhicules et conteneurs.</p></div></div>
-    <div class="tilt" style="--i:1"><div class="card-img"><img src="images/security.jpg" alt="Centre de contrôle" onerror="this.style.display='none'"></div><div class="card-body"><h3>Réduire les délais</h3><p>Intervention immédiate en cas d'alerte détectée.</p></div></div>
-    <div class="tilt" style="--i:2"><div class="card-img"><img src="images/containers.jpg" alt="Traçabilité" onerror="this.style.display='none'"></div><div class="card-body"><h3>Garantir la conformité</h3><p>Traçabilité complète à chaque étape du transport.</p></div></div>
+    <div class="tilt" style="--i:0"><div class="card-img" data-ill="radar" data-photo="images/truck.jpg"></div><div class="card-body"><h3>Offrir une surveillance en temps réel</h3><p>Suivi permanent des véhicules et conteneurs.</p></div></div>
+    <div class="tilt" style="--i:1"><div class="card-img" data-ill="clock" data-photo="images/security.jpg"></div><div class="card-body"><h3>Réduire les délais</h3><p>Intervention immédiate en cas d'alerte détectée.</p></div></div>
+    <div class="tilt" style="--i:2"><div class="card-img" data-ill="doc" data-photo="images/containers.jpg"></div><div class="card-body"><h3>Garantir la conformité</h3><p>Traçabilité complète à chaque étape du transport.</p></div></div>
   </div>
 </section>
 
+<!-- ===== Ce qui nous distingue ===== -->
 <section class="container reveal">
   <h2 class="section-title">Ce qui nous distingue</h2>
   <div class="grid-4">
-    <div class="tilt sc" style="--i:0"><h3>Réactivité terrain</h3><p>Interventions rapides partout en France pour assurer la continuité opérationnelle.</p></div>
-    <div class="tilt sc" style="--i:1"><h3>Technologie éprouvée</h3><p>Validée sur le terrain avec plus de 2 500 camions équipés en activité.</p></div>
-    <div class="tilt sc" style="--i:2"><h3>Adaptabilité</h3><p>Solutions configurées spécifiquement pour transporteurs et logisticiens.</p></div>
-    <div class="tilt sc" style="--i:3"><h3>Service client dédié</h3><p>Équipe support réactive et joignable directement sans intermédiaire.</p></div>
+    <div class="tilt" style="--i:0"><div class="card-img" data-ill="stopwatch"></div><div class="card-body"><h3>Réactivité terrain</h3><p>Interventions rapides partout en France pour assurer la continuité opérationnelle.</p></div></div>
+    <div class="tilt" style="--i:1"><div class="card-img" data-ill="chip"></div><div class="card-body"><h3>Technologie éprouvée</h3><p>Validée sur le terrain avec plus de 2 500 camions équipés en activité.</p></div></div>
+    <div class="tilt" style="--i:2"><div class="card-img" data-ill="network"></div><div class="card-body"><h3>Adaptabilité</h3><p>Solutions configurées spécifiquement pour transporteurs et logisticiens.</p></div></div>
+    <div class="tilt" style="--i:3"><div class="card-img" data-ill="headset"></div><div class="card-body"><h3>Service client dédié</h3><p>Équipe support réactive et joignable directement sans intermédiaire.</p></div></div>
   </div>
 </section>
 
@@ -264,6 +273,30 @@ nav ul{gap:14px;font-size:14px}.hero{padding-top:120px}.scroll-hint{left:20px}
 (()=>{
   const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
   const touch=matchMedia('(hover:none)').matches;
+
+  // ----- Illustrations des cartes (SVG vectoriel) -----
+  const A=b=>'<svg viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+b+'</svg>';
+  const ILL={
+    truck:A('<path class="a" opacity=".4" d="M30 182h340"/><rect class="a f" x="60" y="86" width="170" height="82" rx="6"/><path class="a f" d="M230 106h52l32 32v30h-84z"/><path class="a s" d="M252 114h26l20 22h-46z"/><g style="fill:#0b1f15" class="a"><circle cx="105" cy="170" r="15"/><circle cx="185" cy="170" r="15"/><circle cx="280" cy="170" r="15"/></g><circle class="w" cx="140" cy="62" r="6"/><path class="a s" opacity=".8" d="M121 58a22 22 0 0 1 38 0M108 46a38 38 0 0 1 64 0"/>'),
+    container:A('<path class="a" opacity=".4" d="M30 182h340"/><rect class="a f" x="70" y="122" width="120" height="56" rx="3"/><rect class="a f" x="200" y="122" width="120" height="56" rx="3"/><rect class="a f" x="135" y="62" width="120" height="56" rx="3"/><path class="a" opacity=".5" d="M92 126v48M114 126v48M136 126v48M162 126v48M222 126v48M244 126v48M266 126v48M292 126v48M157 66v48M179 66v48M201 66v48M227 66v48"/><path class="a w" d="M322 74l-11-20a13 13 0 1 1 22 0z"/><circle cx="322" cy="48" r="4" fill="#0b1f15"/>'),
+    shield:A('<path class="a f" d="M200 34l74 26v54c0 42-32 66-74 80-42-14-74-38-74-80V60z"/><path class="a s" stroke-width="7" d="M166 112l26 26 46-52"/>'),
+    map:A('<path class="a f" d="M70 66l86-20 88 20 86-20v118l-86 20-88-20-86 20z"/><path class="a" opacity=".5" d="M156 46v118M244 66v118"/><path class="a" stroke-dasharray="2 10" d="M108 152c44-70 88 14 138-48s54-8 62-18"/><circle class="w" cx="108" cy="152" r="7"/><path class="a w" d="M308 84l-10-18a11 11 0 1 1 20 0z"/>'),
+    eye:A('<rect class="a f" x="92" y="44" width="216" height="132" rx="12"/><path class="a" d="M170 196h60M200 176v20"/><path class="a s" d="M142 110c22-34 94-34 116 0c-22 34-94 34-116 0z"/><circle class="w" cx="200" cy="110" r="14"/>'),
+    sliders:A('<path class="a" d="M80 76h240M80 112h240M80 148h240"/><circle class="a w" cx="150" cy="76" r="12"/><circle class="a w" cx="260" cy="112" r="12"/><circle class="a w" cx="190" cy="148" r="12"/>'),
+    server:A('<rect class="a f" x="100" y="40" width="190" height="42" rx="8"/><rect class="a f" x="100" y="92" width="190" height="42" rx="8"/><rect class="a f" x="100" y="144" width="190" height="42" rx="8"/><g class="w"><circle cx="124" cy="61" r="5"/><circle cx="124" cy="113" r="5"/><circle cx="124" cy="165" r="5"/></g><path class="a" d="M160 61h100M160 113h100M160 165h100"/><rect x="316" y="46" width="9" height="30" fill="#3b6cff"/><rect x="325" y="46" width="9" height="30" fill="#fff"/><rect x="334" y="46" width="9" height="30" fill="#ff4d5e"/>'),
+    radar:A('<circle class="a f" cx="200" cy="112" r="68"/><circle class="a" opacity=".6" cx="200" cy="112" r="40"/><path class="a" opacity=".4" d="M200 36v152M124 112h152"/><path d="M200 112h68a68 68 0 0 0-22-50z" fill="rgba(53,242,160,.35)"/><circle class="w" cx="238" cy="142" r="6"/><circle class="w" cx="168" cy="86" r="6"/>'),
+    clock:A('<circle class="a f" cx="190" cy="112" r="64"/><path class="a s" stroke-width="5" d="M190 112V70M190 112l30 18"/><path class="a" opacity=".5" d="M190 56v8M190 160v8M134 112h8M238 112h8"/><path class="a w" d="M320 66l-26 38h22l-14 38 36-48h-24z"/>'),
+    doc:A('<rect class="a f" x="140" y="32" width="120" height="156" rx="10"/><path class="a" d="M208 72h38M208 110h38M208 148h38"/><path class="a s" stroke-width="4" d="M162 72l8 8 14-16M162 110l8 8 14-16M162 148l8 8 14-16"/>'),
+    stopwatch:A('<circle class="a f" cx="200" cy="124" r="56"/><path class="a" d="M184 50h32M200 50v18M200 124V94"/><path class="a s" stroke-width="5" d="M200 124l22 14"/><path class="a" opacity=".6" d="M118 104h-36M112 130H70M120 156H92"/>'),
+    chip:A('<rect class="a f" x="150" y="62" width="100" height="100" rx="10"/><rect class="a" x="176" y="88" width="48" height="48" rx="4"/><path class="a" d="M175 62V42M200 62V42M225 62V42M175 162v20M200 162v20M225 162v20M150 87h-20M150 112h-20M150 137h-20M250 87h20M250 112h20M250 137h20"/><path class="a s" d="M188 112l8 8 14-16"/>'),
+    network:A('<circle class="a f" cx="130" cy="112" r="30"/><circle class="a f" cx="274" cy="68" r="24"/><circle class="a f" cx="274" cy="156" r="24"/><path class="a" d="M158 100l92-24M158 124l92 24"/><circle class="w" cx="130" cy="112" r="9"/><circle class="w" cx="274" cy="68" r="6"/><circle class="w" cx="274" cy="156" r="6"/>'),
+    headset:A('<path class="a" d="M122 122a78 78 0 0 1 156 0"/><rect class="a f" x="108" y="116" width="28" height="52" rx="12"/><rect class="a f" x="264" y="116" width="28" height="52" rx="12"/><path class="a" d="M278 168c0 28-34 34-70 34"/><circle class="w" cx="204" cy="202" r="6"/>')
+  };
+  // Injection : illustration toujours visible ; la photo ne s'affiche que si le fichier existe
+  $$('.card-img[data-ill]').forEach(el=>{
+    el.insertAdjacentHTML('afterbegin',ILL[el.dataset.ill]||'');
+    if(el.dataset.photo){const im=new Image();im.alt='';im.onload=()=>el.appendChild(im);im.src=el.dataset.photo}
+  });
 
   // Loader
   addEventListener('load',()=>setTimeout(()=>$('#loader').classList.add('off'),500));
